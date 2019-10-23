@@ -31,13 +31,11 @@
 
                 <ImageView
                     android:id="@+id/img_1"
-                    android:background="@color/black"
                     style="@style/img_show">
                 </ImageView>
 
                 <ImageView
                     android:id="@+id/img_2"
-                    android:background="@color/black"
                     style="@style/img_show">
                 </ImageView>
 
