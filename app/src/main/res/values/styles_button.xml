@@ -1,0 +1,56 @@
+<resources>
+
+    <!-- 弹窗按钮 -->
+    <style name="save_button">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+
+        <item name="android:gravity">center</item>
+        <item name="android:lines">1</item>
+        <item name="android:textSize">16dp</item>
+
+        <item name="android:background">@drawable/button_save</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="delete_button" parent="save_button">
+        <item name="android:background">@drawable/button_delete</item>
+    </style>
+    <style name="cancel_button" parent="save_button">
+        <item name="android:background">@drawable/button_cancel</item>
+        <item name="android:textColor">@color/grey_dark</item>
+    </style>
+    <style name="open_button" parent="save_button">
+        <item name="android:background">@drawable/button_5</item>
+    </style>
+
+    <!-- 主界面 -->
+    <style name="item_1">
+        <item name="android:layout_height">@dimen/item_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">10dp</item>
+
+        <item name="android:gravity">center</item>
+        <item name="android:lines">1</item>
+        <item name="android:textSize">@dimen/item_size</item>
+
+        <item name="android:background">@drawable/button_1</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="item_2" parent="item_1">
+        <item name="android:background">@drawable/button_2</item>
+    </style>
+    <style name="item_3" parent="item_1">
+        <item name="android:background">@drawable/button_3</item>
+    </style>
+    <style name="item_4" parent="item_1">
+        <item name="android:background">@drawable/button_4</item>
+    </style>
+    <style name="item_exit" parent="item_1">
+        <item name="android:background">@drawable/button_delete</item>
+    </style>
+
+    <dimen name="item_height">60dp</dimen>
+    <dimen name="item_size">20dp</dimen>
+
+</resources>
