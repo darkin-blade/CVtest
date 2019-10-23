@@ -16,6 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity {
     static {
@@ -49,8 +52,18 @@ public class MainActivity extends AppCompatActivity {
 
         // 初始化图片
         ImageView img_1 = findViewById(R.id.img_1);
-        Bitmap tempImg = BitmapFactory.decodeFile(img1Path);// 打开本机图片
-        img_1.setImageBitmap(tempImg);
+        Bitmap originImg = BitmapFactory.decodeFile(img1Path);// 打开本机图片
+        img_1.setImageBitmap(originImg);
+
+        // 修改灰度
+        Mat rgbMat = new Mat();
+        Mat grayMat = new Mat();
+        ImageView img_2 = findViewById(R.id.img_2);
+        Bitmap grayImg = Bitmap.createBitmap(originImg.getWidth(), originImg.getHeight(), Bitmap.Config.RGB_565);
+        Utils.bitmapToMat(originImg, rgbMat);
+        Imgproc.cvtColor(rgbMat, grayMat, Imgproc.COLOR_RGB2GRAY);
+        Utils.matToBitmap(grayMat, grayImg);
+        img_2.setImageBitmap(grayImg);
     }
 
     static public void infoLog(String log) {
