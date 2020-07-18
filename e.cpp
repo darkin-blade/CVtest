@@ -1,4 +1,8 @@
 
+/**
+ * 官方样例
+ **/
+
 #include <iostream>
 #include <fstream>
 #include <string>

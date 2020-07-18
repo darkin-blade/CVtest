@@ -1,3 +1,7 @@
+/**
+ * 特征点匹配
+ **/
+
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdio.h>
@@ -9,7 +13,6 @@ using namespace cv;
 using namespace cv::detail;
 using namespace std;
 
-// 特征点匹配
 int main(int argc, char** argv)
 {
   char tmp_name[32];// 临时文件名

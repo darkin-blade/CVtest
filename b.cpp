@@ -1,3 +1,7 @@
+/**
+ * 合并两张图片
+ **/
+
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <vector>
@@ -8,7 +12,6 @@
 using namespace cv;
 using namespace std;
 
-// 合并两张图片
 int main(int argc, char** argv)
 {
   std::vector<Mat> imgs;

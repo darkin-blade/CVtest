@@ -1,3 +1,7 @@
+/**
+ * 官方样例默认参数
+ **/
+
 #include <iostream>
 #include <fstream>
 #include <string>

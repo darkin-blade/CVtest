@@ -1,3 +1,7 @@
+/**
+ * 图像缩放旋转变换
+ **/
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 

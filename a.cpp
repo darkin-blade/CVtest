@@ -1,3 +1,7 @@
+/**
+ * 显示一张图片
+ **/
+
 #include <opencv2/opencv.hpp>
 using namespace cv;
 

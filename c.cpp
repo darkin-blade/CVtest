@@ -1,10 +1,13 @@
+/**
+ * 对接两张图片的特征点, 参考: https://blog.csdn.net/holybin/article/details/44734011
+ **/
+
 #include <opencv2/opencv.hpp>
 #include <vector>
 
 using namespace cv;
 using namespace std;
  
-// 对接两张图片的特征点, 参考: https://blog.csdn.net/holybin/article/details/44734011
 int main(int argc, char** argv)
 {
    Mat img = imread("img_1.png");
