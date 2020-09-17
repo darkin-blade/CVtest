@@ -35,7 +35,27 @@ using namespace std;
 using namespace cv;
 using namespace cv::detail;
 
+void show_img(const char *window_name, Mat img) {
+  namedWindow(window_name, WINDOW_AUTOSIZE);
+  imshow(window_name, img);
+  waitKey(0);
 
+  // 保存图片
+  char img_name[128];
+  int savable = 0;
+  for (int i = 0; i < 100; i ++) {
+    sprintf(img_name, "./result_%d.png", i);
+    if (fopen(img_name, "r") == NULL) {
+      savable = 1;
+      break;
+    }
+  }
+  if (savable) {
+    imwrite(img_name, img);
+  } else {
+    CYAN("can't save img");
+  }
+}
 
 // Default command line args
 vector<String> img_names;
@@ -68,7 +88,6 @@ string seam_find_type = "gc_color";
 int blend_type = Blender::MULTI_BAND;
 int timelapse_type = Timelapser::AS_IS;
 float blend_strength = 5;
-string result_name = "result.jpg";
 bool timelapse = false;
 int range_width = -1;
 
@@ -77,6 +96,8 @@ int range_width = -1;
 
 int main(int argc, char* argv[])
 {
+  img_names.push_back("1.jpg");
+  img_names.push_back("2.jpg");
 
   // Check if have enough images
   int num_images = static_cast<int>(img_names.size());
@@ -561,10 +582,17 @@ int main(int argc, char* argv[])
 
   if (!timelapse)
   {
-    Mat result, result_mask;
+    Mat result, result_mask, result_RGBA;
     blender->blend(result, result_mask);
+    result.convertTo(result, CV_8UC3);
+    cvtColor(result, result, COLOR_RGB2RGBA);
+    result_RGBA = Mat::zeros(result.cols, result.rows, CV_8UC4);
+    cout << result.channels() << endl;
+    cout << result_RGBA.at<Vec4b>(0, 0) << endl;
+    result.copyTo(result_RGBA, result_mask);
 
-    // imwrite(result_name, result);
+    show_img("result", result_RGBA);
+    // show_img("mask", result_mask);
   }
 
   return 0;

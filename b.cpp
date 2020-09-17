@@ -15,6 +15,8 @@ using namespace std;
 #define UBUNTU
 #if defined(UBUNTU)
 
+void show_img(const char *window_name, Mat img);
+
 int main(int argc, char** argv)
 {
   std::vector<Mat> imgs;
@@ -35,10 +37,32 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  imshow("result", pano);
+  show_img("result", pano);
   waitKey(0);
 
   return 0;
+}
+
+void show_img(const char *window_name, Mat img) {
+  namedWindow(window_name, WINDOW_AUTOSIZE);
+  imshow(window_name, img);
+  waitKey(0);
+
+  // 保存图片
+  char img_name[128];
+  int savable = 0;
+  for (int i = 0; i < 100; i ++) {
+    sprintf(img_name, "./result_%d.png", i);
+    if (fopen(img_name, "r") == NULL) {
+      savable = 1;
+      break;
+    }
+  }
+  if (savable) {
+    imwrite(img_name, img);
+  } else {
+    CYAN("can't save img");
+  }
 }
 
 #else
