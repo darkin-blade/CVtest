@@ -1,3 +1,7 @@
+/**
+  * 绘制接缝线
+  */
+
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <stdio.h>
@@ -9,14 +13,12 @@ using namespace cv;
 using namespace cv::detail;
 using namespace std;
 
-// 绘制接缝线
+void show_img(const char *window_name, Mat img);
 int main(int argc, char** argv) 
 {
   char tmp_name[32];// 临时文件名
   const int img_num = 2;
-  const char *img_name[img_num] = {"mac1.jpg", "mac2.jpg"};
-  // const int img_num = 1;
-  // const char *img_name[img_num] = {"boat1.jpg"};
+  const char *img_name[img_num] = {"1.jpg", "2.jpg"};
 
   Ptr<Feature2D> finder;
   if (true) {
@@ -133,74 +135,107 @@ int main(int argc, char** argv)
     warper->warp(masks[i], K, cameras[i].R, INTER_NEAREST, BORDER_CONSTANT, masks_warped[i]);
   }
 
-  vector<UMat> images_warped_f(img_num);// TODO
-  for (int i = 0; i < img_num; i ++) {// 图像数据类型转换
-    images_warped[i].convertTo(images_warped_f[i], CV_32F);
-  }
+  // TODO
+  UMat tmp;
+  imgs[0].copyTo(tmp);
+  cout << images_warped[0].type() << " " << images_warped[0].type() << " " << tmp.type() << endl;
+  cout << images_warped[0].channels() << " " << images_warped[0].channels() << " " << tmp.channels() << endl;
+  // for (int i = 0; i < img_num; i ++) {
+  //   images_warped[i].getMat(ACCESS_RW).copyTo(images_warped[i]);
+  // }
 
   // 曝光补偿
   Ptr<ExposureCompensator> compensator = ExposureCompensator::createDefault(ExposureCompensator::GAIN);// TODO 参数
   compensator->feed(corners, images_warped, masks_warped);
 
-  for(int i = 0; i < img_num; i ++) {
+  for (int i = 0; i < img_num; i ++) {
     compensator->apply(i, corners[i], images_warped[i], masks_warped[i]);
+    sprintf(tmp_name, "img%d", i);
+    show_img(tmp_name, images_warped[i].getMat(ACCESS_RW));
+    // sprintf(tmp_name, "mask%d", i);
+    // show_img(tmp_name, masks_warped[i].getMat(ACCESS_RW));
   }
 
-  Ptr<SeamFinder> seam_finder;// 接缝线寻找器
-  if (true) {
-    seam_finder = makePtr<detail::VoronoiSeamFinder>();// 逐点法
-  } else if (false) {
-    seam_finder = makePtr<detail::GraphCutSeamFinder>(GraphCutSeamFinderBase::COST_COLOR);// 默认: 图割法
-  } else if (false) {
-    seam_finder = makePtr<detail::GraphCutSeamFinder>(GraphCutSeamFinderBase::COST_COLOR_GRAD);
-  } else if (false) {
-    seam_finder = makePtr<detail::DpSeamFinder>(DpSeamFinder::COLOR);// 动态规划法
-  } else if (false) {
-    seam_finder = makePtr<detail::DpSeamFinder>(DpSeamFinder::COLOR_GRAD);
-  } else {
-    assert(0);
-  }
+  if (0) {
+    Ptr<SeamFinder> seam_finder;// 接缝线寻找器
+    if (true) {
+      seam_finder = makePtr<detail::VoronoiSeamFinder>();// 逐点法
+    } else if (false) {
+      seam_finder = makePtr<detail::GraphCutSeamFinder>(GraphCutSeamFinderBase::COST_COLOR);// 默认: 图割法
+    } else if (false) {
+      seam_finder = makePtr<detail::GraphCutSeamFinder>(GraphCutSeamFinderBase::COST_COLOR_GRAD);
+    } else if (false) {
+      seam_finder = makePtr<detail::DpSeamFinder>(DpSeamFinder::COLOR);// 动态规划法
+    } else if (false) {
+      seam_finder = makePtr<detail::DpSeamFinder>(DpSeamFinder::COLOR_GRAD);
+    } else {
+      assert(0);
+    }
 
-  // TODO 释放内存
+    vector<UMat> images_warped_f(img_num);// TODO
+    for (int i = 0; i < img_num; i ++) {// 图像数据类型转换
+      images_warped[i].convertTo(images_warped_f[i], CV_32F);
+    }
 
-  // 得到接缝线的掩码图像 masks_warped
-  seam_finder->find(images_warped_f, corners, masks_warped); 
+    // 得到接缝线的掩码图像 masks_warped
+    seam_finder->find(images_warped_f, corners, masks_warped); 
 
-  // 参考: https://blog.csdn.net/zhaocj/article/details/78944867
-  // 通过canny边缘检测，得到掩码边界，其中有一条边界就是接缝线
-  for(int k = 0; k < img_num; k ++) {
-    Canny(masks_warped[k], masks_warped[k], 3, 9, 3); // TODO 参数
-  }
+    // 参考: https://blog.csdn.net/zhaocj/article/details/78944867
+    // 通过canny边缘检测，得到掩码边界，其中有一条边界就是接缝线
+    for (int k = 0; k < img_num; k ++) {
+      Canny(masks_warped[k], masks_warped[k], 3, 9, 3); // TODO 参数
+    }
 
-  // 为了使接缝线看得更清楚，这里使用了膨胀运算来加粗边界线
-  vector<Mat> dilate_img(img_num);  
-  Mat element = getStructuringElement(MORPH_RECT, Size(4, 4));// 定义结构元素,粗细
+    // 为了使接缝线看得更清楚，这里使用了膨胀运算来加粗边界线
+    vector<Mat> dilate_img(img_num);  
+    Mat element = getStructuringElement(MORPH_RECT, Size(4, 4));// 定义结构元素,粗细
 
-  for(int i = 0; i < img_num; i ++)// 遍历所有图像
-  {
-    dilate(masks_warped[i], dilate_img[i],element);// 膨胀运算
-    // 在映射变换图上画出接缝线,在这里只是为了呈现出的一种效果,所以并没有区分接缝线和其他掩码边界
-    for(int y = 0; y < images_warped[i].rows; y ++) {
-      for(int x = 0; x < images_warped[i].cols; x ++) {
-        if (dilate_img[i].at<uchar>(y, x) == 255) {
-          // 掩码边界
-          // 将UMat转成Mat
-          // 颜色
-          images_warped[i].getMat(ACCESS_READ).at<Vec3b>(y, x)[0] = 0;// B
-          images_warped[i].getMat(ACCESS_READ).at<Vec3b>(y, x)[1] = 0;// G
-          images_warped[i].getMat(ACCESS_READ).at<Vec3b>(y, x)[2] = 255;// R
-        }				
+    for (int i = 0; i < img_num; i ++)// 遍历所有图像
+    {
+      dilate(masks_warped[i], dilate_img[i],element);// 膨胀运算
+      // 在映射变换图上画出接缝线,在这里只是为了呈现出的一种效果,所以并没有区分接缝线和其他掩码边界
+      for (int y = 0; y < images_warped[i].rows; y ++) {
+        for (int x = 0; x < images_warped[i].cols; x ++) {
+          if (dilate_img[i].at<uchar>(y, x) == 255) {
+            // 掩码边界
+            // 将UMat转成Mat
+            // 颜色
+            images_warped[i].getMat(ACCESS_READ).at<Vec3b>(y, x)[0] = 0;// B
+            images_warped[i].getMat(ACCESS_READ).at<Vec3b>(y, x)[1] = 0;// G
+            images_warped[i].getMat(ACCESS_READ).at<Vec3b>(y, x)[2] = 255;// R
+          }				
+        }
+      }
+
+      if (1) {// 显示/保存图片
+        sprintf(tmp_name, "seam%d.jpg", i);
+        show_img(tmp_name, images_warped[i].getMat(ACCESS_RW));
       }
     }
-
-    if (false) {// 显示/保存图片
-      sprintf(tmp_name, "seam%d.jpg", i);
-      imshow(tmp_name, images_warped[i]);
-      imwrite(tmp_name, images_warped[i]);
-    }
   }
 
+  return 0;
+}
+
+void show_img(const char *window_name, Mat img) {
+  namedWindow(window_name, WINDOW_NORMAL);
+  resizeWindow(window_name, 1280, 720);
+  imshow(window_name, img);
   waitKey(0);
 
-  return 0;
+  // 保存图片
+  char img_name[128];
+  int savable = 0;
+  for (int i = 0; i < 100; i ++) {
+    sprintf(img_name, "./result_%d.png", i);
+    if (fopen(img_name, "r") == NULL) {
+      savable = 1;
+      break;
+    }
+  }
+  if (savable) {
+    imwrite(img_name, img);
+  } else {
+    CYAN("can't save img");
+  }
 }
