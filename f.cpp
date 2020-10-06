@@ -135,15 +135,6 @@ int main(int argc, char** argv)
     warper->warp(masks[i], K, cameras[i].R, INTER_NEAREST, BORDER_CONSTANT, masks_warped[i]);
   }
 
-  // TODO
-  UMat tmp;
-  imgs[0].copyTo(tmp);
-  cout << images_warped[0].type() << " " << images_warped[0].type() << " " << tmp.type() << endl;
-  cout << images_warped[0].channels() << " " << images_warped[0].channels() << " " << tmp.channels() << endl;
-  // for (int i = 0; i < img_num; i ++) {
-  //   images_warped[i].getMat(ACCESS_RW).copyTo(images_warped[i]);
-  // }
-
   // 曝光补偿
   Ptr<ExposureCompensator> compensator = ExposureCompensator::createDefault(ExposureCompensator::GAIN);// TODO 参数
   compensator->feed(corners, images_warped, masks_warped);

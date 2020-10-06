@@ -5,6 +5,7 @@
 #include <opencv2/core/mat.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include <opencv2/stitching/detail/exposure_compensate.hpp>
 
 #include <iostream>
@@ -34,12 +35,14 @@ int main() {
     images[i].copyTo(tmp_img);
     images_warped.emplace_back(tmp_img);
     sprintf(window_name, "img%d", i);
-    show_img(window_name, tmp_img.getMat(ACCESS_RW));
-    // tmp_mask = UMat::zeros(tmp_img.size(), CV_8UC1);
-    tmp_mask = tmp_img.clone();
+    tmp_mask = UMat::zeros(tmp_img.size(), CV_8UC1);
+    // tmp_mask = tmp_img.clone();
     tmp_mask.setTo(255);
     masks_warped.emplace_back(tmp_mask);
-    // show_img("tmp", tmp.getMat(ACCESS_RW));
+    cout << tmp_img.channels() << endl;
+    cvtColor(tmp_img, tmp_img, COLOR_RGB2RGBA);
+    cout << tmp_img.channels() << endl;
+    show_img(window_name, tmp_img.getMat(ACCESS_RW));
   }
   // 曝光补偿
   Ptr<ExposureCompensator> compensator = ExposureCompensator::createDefault(ExposureCompensator::GAIN);// 使用分块增益补偿
@@ -49,7 +52,7 @@ int main() {
   corners.emplace_back((130, -20));
   compensator->feed(corners, images_warped, masks_warped);
   for (int i = 0; i < 2; i ++) {
-    sprintf(window_name, "img%d", i);
+    // sprintf(window_name, "img%d", i);
     compensator->apply(i, corners[i], images_warped[i], masks_warped[i]);
     images_warped[i].copyTo(images[i]);
     show_img(window_name, images[i]);
