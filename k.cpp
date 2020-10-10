@@ -34,29 +34,26 @@ int main() {
     UMat tmp_img, tmp_mask;
     images[i].copyTo(tmp_img);
     images_warped.emplace_back(tmp_img);
-    sprintf(window_name, "img%d", i);
     tmp_mask = UMat::zeros(tmp_img.size(), CV_8UC1);
     // tmp_mask = tmp_img.clone();
     tmp_mask.setTo(255);
     masks_warped.emplace_back(tmp_mask);
-    cout << tmp_img.channels() << endl;
-    cvtColor(tmp_img, tmp_img, COLOR_RGB2RGBA);
-    cout << tmp_img.channels() << endl;
-    show_img(window_name, tmp_img.getMat(ACCESS_RW));
   }
+
   // 曝光补偿
   Ptr<ExposureCompensator> compensator = ExposureCompensator::createDefault(ExposureCompensator::GAIN);// 使用分块增益补偿
-  // corners.emplace_back((0, 20));
-  // corners.emplace_back((145, 0));
-  corners.emplace_back((-15, 0));
-  corners.emplace_back((130, -20));
+  corners.emplace_back((0, 20));
+  corners.emplace_back((145, 0));
   compensator->feed(corners, images_warped, masks_warped);
   for (int i = 0; i < 2; i ++) {
     // sprintf(window_name, "img%d", i);
     compensator->apply(i, corners[i], images_warped[i], masks_warped[i]);
     images_warped[i].copyTo(images[i]);
+    sprintf(window_name, "mask%d", i);
     show_img(window_name, images[i]);
   }
+
+  // 寻找接缝线
 }
 
 void show_img(const char *window_name, Mat img) {

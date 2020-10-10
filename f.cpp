@@ -147,11 +147,11 @@ int main(int argc, char** argv)
     // show_img(tmp_name, masks_warped[i].getMat(ACCESS_RW));
   }
 
-  if (0) {
+  if (1) {
     Ptr<SeamFinder> seam_finder;// 接缝线寻找器
-    if (true) {
+    if (false) {
       seam_finder = makePtr<detail::VoronoiSeamFinder>();// 逐点法
-    } else if (false) {
+    } else if (true) {
       seam_finder = makePtr<detail::GraphCutSeamFinder>(GraphCutSeamFinderBase::COST_COLOR);// 默认: 图割法
     } else if (false) {
       seam_finder = makePtr<detail::GraphCutSeamFinder>(GraphCutSeamFinderBase::COST_COLOR_GRAD);
@@ -170,6 +170,9 @@ int main(int argc, char** argv)
 
     // 得到接缝线的掩码图像 masks_warped
     seam_finder->find(images_warped_f, corners, masks_warped); 
+    for (int i = 0; i < img_num; i ++) {
+      show_img("mask", masks_warped[i].getMat(ACCESS_READ));
+    }
 
     // 参考: https://blog.csdn.net/zhaocj/article/details/78944867
     // 通过canny边缘检测，得到掩码边界，其中有一条边界就是接缝线
