@@ -32,8 +32,8 @@ int main( int argc, char* argv[] )
   // TODO 高斯滤波
 	GaussianBlur(imageGray, imageGray, Size(5, 5), 2);
 	imshow("Gray Image", imageGray); 
-  // 边缘检测
-	Canny(imageGray, imageGray, 80, 150);  
+  // TODO 边缘检测, threshold1: 如果小于下限值, 则被抛弃, threshold2: 如果高于上限值, 则认为是边缘像素
+	Canny(imageGray, imageGray, 80, 250);
 	imshow("Canny Image", imageGray);
  
 	// 轮廓检测
@@ -43,19 +43,24 @@ int main( int argc, char* argv[] )
 	Mat marks(image.size(),CV_32S);// 分水岭算法第二个矩阵参数
 	marks = Scalar::all(0);
   // 轮廓标记
-	for(int index = 0, compCount = 0; index >= 0; compCount ++ ) 
-	{
+	for(int index = 0, compCount = 0; index >= 0; compCount ++) {
 		// 设置注水点, 有多少轮廓, 就有多少注水点
-		drawContours(marks, contours, index, Scalar::all(compCount + 1), 1, 8, hierarchy);
+		drawContours(marks,
+		 				     contours,  // 所有轮廓组
+								 index,     // 需要绘制的轮廓组的index, 如果为负, 则表示所有轮廓组都要绘制
+								 Scalar::all(compCount + 1), 
+								 1,         // 线宽, 负数表示填充内部
+								 8,         // 线型
+								 hierarchy, // TODO 不知道什么用
+								 INT_MAX);
     index = hierarchy[index][0];
 	}
  
 	// 查看分水岭算法的矩阵参数
 	Mat marksShows;
-	convertScaleAbs(marks, marksShows);
+	convertScaleAbs(marks, marksShows);// 线性变换到8U
 	imshow("marksShow", marksShows);
 
- 
 	// 分水岭算法之后的矩阵marks
 	watershed(image, marks);
 	Mat afterWatershed;
@@ -66,12 +71,12 @@ int main( int argc, char* argv[] )
 	Mat PerspectiveImage = Mat::zeros(image.size(), CV_8UC3);
 	for(int i = 0; i < marks.rows; i ++) {
 		for(int j = 0; j < marks.cols; j ++) {
-			int index = marks.at<int>(i,j);
-			if (marks.at<int>(i,j) == -1) {
+			int index = marks.at<int>(i, j);
+			if (marks.at<int>(i, j) == -1) {
         // TODO
-				PerspectiveImage.at<Vec3b>(i,j) = Vec3b(255,255,255);
+				PerspectiveImage.at<Vec3b>(i, j) = Vec3b(255, 255, 255);
 			} else {
-				PerspectiveImage.at<Vec3b>(i,j) = RandomColor(index);
+				PerspectiveImage.at<Vec3b>(i, j) = RandomColor(index);
 			}
 		}
 	}
