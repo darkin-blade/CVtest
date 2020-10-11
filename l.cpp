@@ -1,5 +1,5 @@
 /**
-  * 图像分割
+  * 图像分割, 并消除border
   */
 
 #include <iostream>
@@ -9,6 +9,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/imgproc/types_c.h>
+#include <opencv2/photo.hpp>
 
 #define GREEN(format, ...) \
   printf("\033[1;32m[%s, %d]" format "\33[0m\n", __func__, __LINE__, ## __VA_ARGS__)
@@ -33,14 +34,14 @@ int main( int argc, char* argv[] )
 	GaussianBlur(imageGray, imageGray, Size(5, 5), 2);
 	imshow("Gray Image", imageGray); 
   // TODO 边缘检测, threshold1: 如果小于下限值, 则被抛弃, threshold2: 如果高于上限值, 则认为是边缘像素
-	Canny(imageGray, imageGray, 80, 250);
+	Canny(imageGray, imageGray, 80, 200);
 	imshow("Canny Image", imageGray);
  
 	// 轮廓检测
 	vector<vector<Point> > contours;  
 	vector<Vec4i> hierarchy;  
-	findContours(imageGray, contours, hierarchy, RETR_TREE,CHAIN_APPROX_SIMPLE, Point());  
-	Mat marks(image.size(),CV_32S);// 分水岭算法第二个矩阵参数
+	findContours(imageGray, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point());  
+	Mat marks(image.size(), CV_32S);// 分水岭算法第二个矩阵参数
 	marks = Scalar::all(0);
   // 轮廓标记
 	for(int index = 0, compCount = 0; index >= 0; compCount ++) {
@@ -49,7 +50,7 @@ int main( int argc, char* argv[] )
 		 				     contours,  // 所有轮廓组
 								 index,     // 需要绘制的轮廓组的index, 如果为负, 则表示所有轮廓组都要绘制
 								 Scalar::all(compCount + 1), 
-								 1,         // 线宽, 负数表示填充内部
+								 -1,         // 线宽, 负数表示填充内部
 								 8,         // 线型
 								 hierarchy, // TODO 不知道什么用
 								 INT_MAX);
@@ -67,19 +68,23 @@ int main( int argc, char* argv[] )
 	convertScaleAbs(marks, afterWatershed);
 	imshow("After Watershed", afterWatershed);
  
+	Mat repair_mask = Mat::zeros(image.size(), CV_8UC1);
 	//对每一个区域进行颜色填充
 	Mat PerspectiveImage = Mat::zeros(image.size(), CV_8UC3);
-	for(int i = 0; i < marks.rows; i ++) {
-		for(int j = 0; j < marks.cols; j ++) {
+	for (int i = 0; i < marks.rows; i ++) {
+		for (int j = 0; j < marks.cols; j ++) {
 			int index = marks.at<int>(i, j);
 			if (marks.at<int>(i, j) == -1) {
         // TODO
 				PerspectiveImage.at<Vec3b>(i, j) = Vec3b(255, 255, 255);
+				repair_mask.at<uchar>(i, j) = 255;
 			} else {
 				PerspectiveImage.at<Vec3b>(i, j) = RandomColor(index);
 			}
 		}
 	}
+
+	inpaint(PerspectiveImage, repair_mask, PerspectiveImage, 2, INPAINT_TELEA);
 	show_img("After ColorFill", PerspectiveImage);
  
 	// 分割并将填充颜色的结果跟原始图像融合
