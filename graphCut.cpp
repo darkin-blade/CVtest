@@ -32,7 +32,7 @@ int main( int argc, char* argv[] )
 	cvtColor(image, imageGray, CV_RGB2GRAY);
   // TODO 高斯滤波
 	GaussianBlur(imageGray, imageGray, Size(5, 5), 2);
-	imshow("Gray Image", imageGray); 
+	// imshow("Gray Image", imageGray); 
   // TODO 边缘检测, threshold1: 如果小于下限值, 则被抛弃, threshold2: 如果高于上限值, 则认为是边缘像素
 	Canny(imageGray, imageGray, 80, 200);
 	imshow("Canny Image", imageGray);
@@ -60,15 +60,14 @@ int main( int argc, char* argv[] )
 	// 查看分水岭算法的矩阵参数
 	Mat marksShows;
 	convertScaleAbs(marks, marksShows);// 线性变换到8U
-	imshow("marksShow", marksShows);
+	// imshow("marksShow", marksShows);
 
 	// 分水岭算法之后的矩阵marks
 	watershed(image, marks);
 	Mat afterWatershed;
 	convertScaleAbs(marks, afterWatershed);
-	imshow("After Watershed", afterWatershed);
+	// imshow("After Watershed", afterWatershed);
  
-	Mat repair_mask = Mat::zeros(image.size(), CV_8UC1);
 	//对每一个区域进行颜色填充
 	Mat PerspectiveImage = Mat::zeros(image.size(), CV_8UC3);
 	for (int i = 0; i < marks.rows; i ++) {
@@ -77,13 +76,17 @@ int main( int argc, char* argv[] )
 			if (marks.at<int>(i, j) == -1) {
         // TODO
 				PerspectiveImage.at<Vec3b>(i, j) = Vec3b(255, 255, 255);
-				repair_mask.at<uchar>(i, j) = 255;
 			} else {
 				PerspectiveImage.at<Vec3b>(i, j) = RandomColor(index);
 			}
 		}
 	}
 
+	Mat repair_mask = Mat::zeros(image.size(), CV_8UC1);
+	threshold(imageGray, repair_mask, 200, 255, THRESH_BINARY);
+	GREEN("%d", repair_mask.channels());
+	// cvtColor(imageGray, repair_mask, COLOR_RGB2GRAY);
+	imshow("repair mask", repair_mask);
 	inpaint(PerspectiveImage, repair_mask, PerspectiveImage, 2, INPAINT_TELEA);
 	show_img("After ColorFill", PerspectiveImage);
  
