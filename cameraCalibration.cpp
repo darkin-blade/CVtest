@@ -70,4 +70,9 @@ int main() {
   Mat cameraMatrix, distCoeffs, R, T;
   calibrateCamera(objectPoints, imagePoints, imageGray[0].size(), cameraMatrix, distCoeffs, R, T);
   cout << cameraMatrix << endl;
+  for (int i = 0; i < cameraMatrix.rows; i ++) {
+    for (int j = 0; j < cameraMatrix.cols; j ++) {
+      printf("%lf %c", cameraMatrix.at<double>(i, j), j == (cameraMatrix.rows - 1) ? '\n' : ' ' );
+    }
+  }
 }
