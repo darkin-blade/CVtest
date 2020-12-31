@@ -9,6 +9,7 @@
 extern "C" {
 #include <vl/generic.h>
 #include <vl/sift.h>
+#include <vl/svm.h>
 }
 
 #define GREEN(format, ...) \
@@ -18,8 +19,8 @@ using namespace cv;
 using namespace std;
 
 int main() {
-  Mat img1 = imread("1.jpg");
-  Mat img2 = imread("2.jpg");
+  Mat img1 = imread("../1.jpg");
+  Mat img2 = imread("../2.jpg");
 
   // 保存图像数据
   vl_sift_pix *sift_img1 = new vl_sift_pix[img1.cols * img1.rows];

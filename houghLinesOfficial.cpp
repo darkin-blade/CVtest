@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 {
     // Declare the output variables
     Mat dst, cdst, cdstP;
-    const char* default_file = "../2.jpg";
+    const char* default_file = "../1.jpg";
     const char* filename = argc >=2 ? argv[1] : default_file;
     // Loads an image
     Mat src = imread( filename, IMREAD_GRAYSCALE );
@@ -45,7 +45,9 @@ int main(int argc, char** argv)
         printf(" Program Arguments: [image_name -- default %s] \n", default_file);
         return -1;
     }
-    // Edge detection
+    // GaussianBlur(src, src, Size(5, 5), 0);
+
+    // Edge detection, https://www.jianshu.com/p/e8e1f2f1c605
     Canny(
       src, 
       dst, 
@@ -88,7 +90,7 @@ int main(int argc, char** argv)
       1, 
       CV_PI/180, 
       50, // hough变换图像空间值最大点 50
-      200, // 最小值线长度 50
+      50, // 最小值线长度 50
       20   // 直线间隙最大值 10
     ); // runs the actual detection
     // Draw the lines
