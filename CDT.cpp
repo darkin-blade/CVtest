@@ -1,5 +1,5 @@
 /*
-  条件限制delaunay三角剖分, 输出索引
+  条件限制delaunay三角剖分
   https://doc.cgal.org/latest/Mesh_2/index.html
 */
 
@@ -8,8 +8,8 @@
 #include <CGAL/Triangulation_conformer_2.h>
 #include <iostream>
 typedef CGAL::Exact_predicates_inexact_constructions_kernel
-  K;
-typedef CGAL::Constrained_Delaunay_triangulation_2<K>
+  Kernel;
+typedef CGAL::Constrained_Delaunay_triangulation_2<Kernel>
   CDT;
 typedef CDT::Point
   Point;
@@ -22,15 +22,25 @@ int main()
 {
   CDT cdt;
   // construct a constrained triangulation
+  Point
+    a( 5., 5.),
+    b(-5., 5.),
+    c( 4., 3.),
+    d( 5.,-5.),
+    e( 6., 6.),
+    f(-6., 6.),
+    g(-6.,-6.),
+    h( 6.,-6.);
   Vertex_handle
-    va = cdt.insert(Point( 5., 5.)),
-    vb = cdt.insert(Point(-5., 5.)),
-    vc = cdt.insert(Point( 4., 3.)),
-    vd = cdt.insert(Point( 5.,-5.)),
-    ve = cdt.insert(Point( 6., 6.)),
-    vf = cdt.insert(Point(-6., 6.)),
-    vg = cdt.insert(Point(-6.,-6.)),
-    vh = cdt.insert(Point( 6.,-6.));
+    va = cdt.insert(a),
+    vb = cdt.insert(b),
+    vc = cdt.insert(c),
+    vd = cdt.insert(d),
+    ve = cdt.insert(e),
+    vf = cdt.insert(f),
+    vg = cdt.insert(g),
+    vh = cdt.insert(h);
+  ;
   cdt.insert_constraint(va,vb);
   cdt.insert_constraint(vb,vc);
   cdt.insert_constraint(vc,vd);
@@ -40,7 +50,7 @@ int main()
   cdt.insert_constraint(vg,vh);
   cdt.insert_constraint(vh,ve);
   for (CDT::Finite_faces_iterator fit = cdt.finite_faces_begin(); fit != cdt.finite_faces_end(); fit ++) {
-    ;
+    cout << (*(fit->vertex(0))) << ";" << (*(fit->vertex(1))) << ";" << (*(fit->vertex(2))) << endl;
   }
 
   // cout << "Number of vertices before: "
