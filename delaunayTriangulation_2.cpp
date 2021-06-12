@@ -1,3 +1,7 @@
+/*
+  opencv的delaunay三角剖分
+*/
+
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc_c.h>
@@ -92,10 +96,10 @@ int main()
     srand((unsigned)time(0));
 
     vector<Point2f> pointset = generatePointSet(20, rect);
-    Mat img_ptst = img.clone();
+    // Mat img_ptst = img.clone();
     // drawPointSet(img_ptst, pointset, Scalar(0, 255, 0));
-    imshow("Point set", img_ptst);
-    imwrite("pointSet.jpg", img_ptst);
+    // imshow("Point set", img_ptst);
+    // imwrite("pointSet.jpg", img_ptst);
 
     //创建Delaunay剖分
     Subdiv2D subdiv(rect);
@@ -110,11 +114,11 @@ int main()
     imshow("Delaunay", img_delaunay);
     imwrite("delaunay.jpg", img_delaunay);
 
-    //画出Voronoi图
-    Mat img_voronoi = img.clone();
-    paintVoronoi(img_voronoi, subdiv);
-    imshow("Voronoi", img_voronoi);
-    imwrite("voronoi.jpg", img_voronoi);
+    // //画出Voronoi图
+    // Mat img_voronoi = img.clone();
+    // paintVoronoi(img_voronoi, subdiv);
+    // imshow("Voronoi", img_voronoi);
+    // imwrite("voronoi.jpg", img_voronoi);
 
     waitKey(0);
     return 0;
