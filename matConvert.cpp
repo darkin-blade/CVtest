@@ -1,7 +1,6 @@
-/**
-  * 测试normL2函数
-  */
-
+/***
+  * Mat类型转换
+  **/
 
 #include <vector>
 #include <stdio.h>
@@ -17,6 +16,7 @@
 #include <opencv2/imgproc/types_c.h>
 #include <opencv2/stitching.hpp>
 
+
 #define LOG(format, ...) \
   printf("\033[1;36m" format "\33[0m\n", ## __VA_ARGS__)
 
@@ -25,9 +25,9 @@ using namespace cv::detail;
 using namespace std;
 
 int main() {
-  Point3i a(3, 4.0, 0), b(0, 0, 5);
-  int weight = normL2(a, b);
-  LOG("%d", weight);
-  Point2f c(4, 3);
-  LOG("%lf", norm(c));
+  Mat a = Mat(1, 1, CV_8UC1, Scalar::all(255));
+  LOG("%d", a.at<uchar>(1, 1));
+  a.convertTo(a, CV_32F);
+  LOG("%f", a.at<float>(0, 0));
+  LOG("%d %d", a.rows, a.cols);
 }
