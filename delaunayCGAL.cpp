@@ -1,5 +1,6 @@
 /*
   cgal三角化, 输出索引
+  https://stackoverflow.com/questions/19850354/cgal-retrieve-vertex-index-after-delaunay-triangulation
 */
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>

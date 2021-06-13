@@ -40,7 +40,6 @@ int main()
     vf = cdt.insert(f),
     vg = cdt.insert(g),
     vh = cdt.insert(h);
-  ;
   cdt.insert_constraint(va,vb);
   cdt.insert_constraint(vb,vc);
   cdt.insert_constraint(vc,vd);
