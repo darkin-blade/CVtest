@@ -1,3 +1,7 @@
+/*
+  霍夫直线检测
+  */
+
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
@@ -35,7 +39,7 @@ int main(int argc, char** argv)
 {
     // Declare the output variables
     Mat dst, cdst, cdstP;
-    const char* default_file = "../1.jpg";
+    const char* default_file = "../4.jpg";
     const char* filename = argc >=2 ? argv[1] : default_file;
     // Loads an image
     Mat src = imread( filename, IMREAD_GRAYSCALE );
@@ -91,7 +95,7 @@ int main(int argc, char** argv)
       CV_PI/180, 
       50, // hough变换图像空间值最大点 50
       50, // 最小值线长度 50
-      20   // 直线间隙最大值 10
+      10   // 直线间隙最大值 10
     ); // runs the actual detection
     // Draw the lines
     for( size_t i = 0; i < linesP.size(); i++ )
@@ -101,7 +105,7 @@ int main(int argc, char** argv)
     }
     // Show results
     // show_img("Source", src);
-    // show_img("Detected Lines (in red) - Standard Hough Line Transform", cdst);
+    show_img("Detected Lines (in red) - Standard Hough Line Transform", cdst);
     show_img("Detected Lines (in red) - Probabilistic Line Transform", cdstP);
     // Wait and Exit
     return 0;
