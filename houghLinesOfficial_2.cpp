@@ -33,16 +33,16 @@ void show_img(const char *window_name, Mat img) {
 int main(int argc, char** argv)
 {
     Mat src, dst, color_dst;
-    const char* default_file = "../5.jpg";
+    const char* default_file = "../result_2.png";
     const char* filename = argc >=2 ? argv[1] : default_file;
     // Loads an image
     src = imread( filename, IMREAD_GRAYSCALE );
-    GaussianBlur(src, src, Size(25, 25), 5);
+    GaussianBlur(src, src, Size(15, 15), 3);
     show_img( "Source", src );
 
     /* 缩放 */
     float origin_size = src.rows * src.cols;
-    int DOWN_SAMPLE_IMAGE_SIZE = 600 * 800;
+    int DOWN_SAMPLE_IMAGE_SIZE = 600 * 800 * 100;
     if (origin_size > DOWN_SAMPLE_IMAGE_SIZE) {
       float scale = sqrt(DOWN_SAMPLE_IMAGE_SIZE / origin_size);
       resize(src, src, Size(), scale, scale);
@@ -62,8 +62,8 @@ int main(int argc, char** argv)
       1, // 距离精度: 1
       CV_PI/180, 
       200, // 阈值: 80
-      50, // 长度: 30
-      50);// 间隙: 10
+      200, // 长度: 30
+      200);// 间隙: 10
     for( size_t i = 0; i < lines.size(); i++ )
     {
         line( color_dst, Point(lines[i][0], lines[i][1]),

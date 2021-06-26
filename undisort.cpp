@@ -35,6 +35,8 @@ void show_img(const char *window_name, Mat img) {
   }
 }
 
+char img_path[128];
+
 int main() {
   Mat K = Mat::zeros(3, 3, CV_64FC1);
   K.at<double>(0, 0) = 3166;// fx
@@ -46,10 +48,8 @@ int main() {
   K.at<double>(2, 0) = 0; 
   K.at<double>(2, 1) = 0; 
   K.at<double>(2, 2) = 1; 
-  Mat src, dst;
-  src = imread("../4.jpg");
-  vector<double> distCoeffs;
 
+  vector<double> distCoeffs;
   distCoeffs.emplace_back(0.05465694372885115);
   distCoeffs.emplace_back(0.198208668072882);
   distCoeffs.emplace_back(0.002225091498174759);
@@ -63,8 +63,14 @@ int main() {
   // TODO
 
   /* 全图 */
+
   Mat map1, map2;
-  initUndistortRectifyMap(K, distCoeffs, Mat(), Mat(), Size(2976, 3968), CV_16SC2, map1, map2);
-  remap(src, dst, map1, map2, INTER_LINEAR);
-  show_img("dst", dst);
+  Mat src, dst;
+  for (int i = 0; i < 4; i ++) {
+    sprintf(img_path, "../%d.jpg", i + 1);
+    src = imread(img_path);
+    initUndistortRectifyMap(K, distCoeffs, Mat(), Mat(), Size(2400, 3200), CV_16SC2, map1, map2);
+    remap(src, dst, map1, map2, INTER_LINEAR);
+    show_img("dst", dst);
+  }
 }
