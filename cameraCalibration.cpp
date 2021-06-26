@@ -1,5 +1,6 @@
 /**
- *相机参数标定, 参考: https://blog.csdn.net/y459541195/article/details/104544956
+ 相机参数标定, 参考: https://blog.csdn.net/y459541195/article/details/104544956
+ 畸变校正
  **/
 
 #include <math.h>
@@ -8,6 +9,7 @@
 #include <vector>
 
 #include <opencv2/calib3d.hpp>
+#include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core/types_c.h>
@@ -15,8 +17,34 @@
 using namespace cv;
 using namespace std;
 
+#define LOG(format, ...) \
+  printf("\033[1;32m[%s, %d]" format "\33[0m\n", __func__, __LINE__, ## __VA_ARGS__)
+
+void show_img(const char *window_name, Mat img) {
+  namedWindow(window_name, WINDOW_NORMAL);
+  resizeWindow(window_name, 1280, 720);
+  imshow(window_name, img);
+  waitKey(0);
+
+  // 保存图片
+  char img_name[128];
+  int savable = 0;
+  for (int i = 0; i < 100; i ++) {
+    sprintf(img_name, "../result_%d.png", i);
+    if (fopen(img_name, "r") == NULL) {
+      savable = 1;
+      break;
+    }
+  }
+  if (savable) {
+    imwrite(img_name, img);
+  } else {
+    LOG("can't save img");
+  }
+}
+
 const int DOWN_SAMPLE_IMAGE_SIZE = 800 * 600;
-const char app_path[64] = "./test_calibration";
+const char app_path[64] = "../test_calibration";
 
 char img_path[128];
 
@@ -30,10 +58,12 @@ int main() {
     Mat tmp = imread(img_path);
 
     // 放缩
-    double imageSize = tmp.rows * tmp.cols;
-    if (imageSize > DOWN_SAMPLE_IMAGE_SIZE) {
-      double scale = sqrt(DOWN_SAMPLE_IMAGE_SIZE / imageSize);
-      resize(tmp, tmp, Size(), scale, scale);
+    if (false) {
+      double imageSize = tmp.rows * tmp.cols;
+      if (imageSize > DOWN_SAMPLE_IMAGE_SIZE) {
+        double scale = sqrt(DOWN_SAMPLE_IMAGE_SIZE / imageSize);
+        resize(tmp, tmp, Size(), scale, scale);
+      }
     }
     imageRGB.emplace_back(tmp);
     cvtColor(tmp, tmp, COLOR_BGR2GRAY);
@@ -70,9 +100,19 @@ int main() {
   Mat cameraMatrix, distCoeffs, R, T;
   calibrateCamera(objectPoints, imagePoints, imageGray[0].size(), cameraMatrix, distCoeffs, R, T);
   cout << cameraMatrix << endl;
-  for (int i = 0; i < cameraMatrix.rows; i ++) {
-    for (int j = 0; j < cameraMatrix.cols; j ++) {
-      printf("%lf %c", cameraMatrix.at<double>(i, j), j == (cameraMatrix.rows - 1) ? '\n' : ' ' );
-    }
+  cout << distCoeffs << endl;
+  // for (int i = 0; i < cameraMatrix.rows; i ++) {
+  //   for (int j = 0; j < cameraMatrix.cols; j ++) {
+  //     printf("%lf %c", cameraMatrix.at<double>(i, j), j == (cameraMatrix.rows - 1) ? '\n' : ' ' );
+  //   }
+  // }
+
+  for (int i = 0; i < 4; i ++) {
+    Mat srcImg, dstImg;
+    sprintf(img_path, "../%d.jpg", i + 1);
+    srcImg = imread(img_path);
+    cout << srcImg.size << endl;
+    undistort(srcImg, dstImg, cameraMatrix, distCoeffs);
+    show_img("result", dstImg);
   }
 }

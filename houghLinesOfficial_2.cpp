@@ -33,7 +33,7 @@ void show_img(const char *window_name, Mat img) {
 int main(int argc, char** argv)
 {
     Mat src, dst, color_dst;
-    const char* default_file = "../1.jpg";
+    const char* default_file = "../5.jpg";
     const char* filename = argc >=2 ? argv[1] : default_file;
     // Loads an image
     src = imread( filename, IMREAD_GRAYSCALE );
