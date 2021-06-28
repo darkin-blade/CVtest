@@ -25,7 +25,7 @@ Vec3b RandomColor(int value);  //生成随机颜色函数
 int main( int argc, char* argv[] )
 {
   // 读取图像
-	Mat image = imread("1.jpg");
+	Mat image = imread("../1.jpg");
  
 	// 图像灰度化
 	Mat imageGray;

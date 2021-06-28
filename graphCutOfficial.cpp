@@ -1,5 +1,5 @@
 /**
-  * 官方的分水岭算法
+  * 官方的分水岭算法, ./out 图片路径
   */
 
 #include <opencv2/core/utility.hpp>
@@ -59,12 +59,13 @@ int main( int argc, char** argv )
         return 0;
     }
     help();
-    namedWindow( "image", 1 );
+    namedWindow( "image", WINDOW_NORMAL );
     img0.copyTo(img);
     cvtColor(img, markerMask, COLOR_BGR2GRAY);
     cvtColor(markerMask, imgGray, COLOR_GRAY2BGR);
     markerMask = Scalar::all(0);
     imshow( "image", img );
+    resizeWindow("image", 1280, 720);
     setMouseCallback( "image", onMouse, 0 );
     for(;;)
     {
@@ -118,7 +119,9 @@ int main( int argc, char** argv )
                         wshed.at<Vec3b>(i,j) = colorTab[index - 1];
                 }
             wshed = wshed*0.5 + imgGray*0.5;
+            namedWindow( "watershed transform", WINDOW_NORMAL );
             imshow( "watershed transform", wshed );
+            resizeWindow("watershed transform", 1280, 720);
         }
     }
     return 0;
